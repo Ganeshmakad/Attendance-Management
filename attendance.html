@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.25rem;
+  }
+
+  .header p { color: #64748b; font-size: 0.9rem; }
+
+  .dot { color: #38bdf8; }
+
+  .card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 480px;
+    margin-bottom: 1.5rem;
+  }
+
+  .card h2 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: #38bdf8;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+  .form-group.full { grid-column: 1 / -1; }
+
+  label { font-size: 0.75rem; font-weight: 500; color: #94a3b8; }
+
+  input, select {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 0.6rem 0.875rem;
+    color: #e2e8f0;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+
+  input:focus, select:focus { border-color: #38bdf8; }
+  input::placeholder { color: #475569; }
+  select option { background: #1e293b; }
+
+  .status-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .status-btn {
+    flex: 1;
+    padding: 0.6rem;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    background: transparent;
+    color: #64748b;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .status-btn.present.active { background: rgba(34,197,94,0.15); border-color: #22c55e; color: #22c55e; }
+  .status-btn.absent.active  { background: rgba(239,68,68,0.15);  border-color: #ef4444; color: #ef4444; }
+  .status-btn.late.active    { background: rgba(234,179,8,0.15);  border-color: #eab308; color: #eab308; }
+
+  .btn-submit {
+    width: 100%;
+    padding: 0.75rem;
+    background: #38bdf8;
+    border: none;
+    border-radius: 8px;
+    color: #0f172a;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-submit:hover { background: #7dd3fc; }
+
+  /* Records */
+  .records-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .count-badge {
+    background: rgba(56,189,248,0.1);
+    border: 1px solid rgba(56,189,248,0.2);
+    border-radius: 100px;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.75rem;
+    color: #38bdf8;
+    font-weight: 600;
+  }
+
+  .btn-refresh {
+    background: transparent;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 0.3rem 0.6rem;
+    color: #64748b;
+    font-size: 0.75rem;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .btn-refresh:hover { color: #e2e8f0; border-color: #475569; }
+
+  .record-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #0f172a;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #38bdf8, #818cf8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #0f172a;
+    flex-shrink: 0;
+  }
+
+  .record-info { flex: 1; }
+  .record-name { font-size: 0.875rem; font-weight: 600; }
+  .record-meta { font-size: 0.72rem; color: #64748b; margin-top: 1px; }
+
+  .status-pill {
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
+  .pill-present { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .pill-absent  { background: rgba(239,68,68,0.15);  color: #ef4444; }
+  .pill-late    { background: rgba(234,179,8,0.15);  color: #eab308; }
+
+  .btn-del {
+    background: transparent;
+    border: none;
+    color: #475569;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0.2rem;
+    transition: color 0.2s;
+  }
+  .btn-del:hover { color: #ef4444; }
+
+  .empty { text-align: center; padding: 2rem; color: #475569; font-size: 0.85rem; }
+
+  .toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 99;
+    white-space: nowrap;
+  }
+
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.ok  { border-color: #22c55e; color: #22c55e; }
+  .toast.err { border-color: #ef4444; color: #ef4444; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Attendance<span class="dot">.</span></h1>
+  <p>Student Attendance Management System</p>
+</div>
+
+<!-- Mark Attendance -->
+<div class="card">
+  <h2>✏️ Mark Attendance</h2>
+  <div class="form-row">
+    <div class="form-group">
+      <label>Student Name</label>
+      <input type="text" id="f-name" placeholder="e.g. Ganesh" />
+    </div>
+    <div class="form-group">
+      <label>Roll Number</label>
+      <input type="text" id="f-roll" placeholder="e.g. 21CS045" />
+    </div>
+    <div class="form-group">
+      <label>Subject</label>
+      <input type="text" id="f-subject" placeholder="e.g. DBMS" />
+    </div>
+    <div class="form-group">
+      <label>Date</label>
+      <input type="date" id="f-date" />
+    </div>
+  </div>
+
+  <label style="font-size:.75rem;font-weight:500;color:#94a3b8;display:block;margin-bottom:.5rem">Status</label>
+  <div class="status-group">
+    <button class="status-btn present active" onclick="setStatus('Present', this)">✓ Present</button>
+    <button class="status-btn absent" onclick="setStatus('Absent', this)">✗ Absent</button>
+    <button class="status-btn late"   onclick="setStatus('Late', this)">⏱ Late</button>
+  </div>
+
+  <button class="btn-submit" onclick="markAttendance()">Mark Attendance</button>
+</div>
+
+<!-- Records -->
+<div class="card">
+  <div class="records-header">
+    <h2 style="margin-bottom:0">📋 Records</h2>
+    <div style="display:flex;gap:.5rem;align-items:center">
+      <span class="count-badge" id="count-badge">0 entries</span>
+      <button class="btn-refresh" onclick="loadRecords()">↻ Refresh</button>
+    </div>
+  </div>
+  <div id="records-list"><div class="empty">No records yet</div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'http://localhost:3000';
+let selectedStatus = 'Present';
+
+// Set today's date by default
+document.getElementById('f-date').valueAsDate = new Date();
+
+function setStatus(status, btn) {
+  selectedStatus = status;
+  document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function markAttendance() {
+  const name    = document.getElementById('f-name').value.trim();
+  const roll    = document.getElementById('f-roll').value.trim();
+  const subject = document.getElementById('f-subject').value.trim();
+  const date    = document.getElementById('f-date').value;
+
+  if (!name || !roll || !subject || !date) {
+    toast('Please fill in all fields!', 'err'); return;
+  }
+
+  const payload = { name, roll, subject, date, status: selectedStatus };
+
+  try {
+    const res = await fetch(`${API}/addAttendance`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error();
+    toast('Attendance marked!', 'ok');
+    document.getElementById('f-name').value = '';
+    document.getElementById('f-roll').value = '';
+    loadRecords();
+  } catch {
+    toast('Backend not connected — demo mode', 'err');
+    // Demo fallback
+    demoRecords.unshift({ id: Date.now(), ...payload });
+    renderRecords(demoRecords);
+  }
+}
+
+async function loadRecords() {
+  try {
+    const res = await fetch(`${API}/getAttendance`, { signal: AbortSignal.timeout(3000) });
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    renderRecords(data);
+  } catch {
+    renderRecords(demoRecords);
+  }
+}
+
+async function deleteRecord(id) {
+  try {
+    await fetch(`${API}/deleteAttendance/${id}`, { method: 'DELETE' });
+    toast('Record deleted', 'ok');
+    loadRecords();
+  } catch {
+    demoRecords = demoRecords.filter(r => r.id !== id);
+    renderRecords(demoRecords);
+    toast('Deleted (demo)', 'ok');
+  }
+}
+
+function renderRecords(data) {
+  const el = document.getElementById('records-list');
+  document.getElementById('count-badge').textContent = `${data.length} entries`;
+
+  if (data.length === 0) {
+    el.innerHTML = '<div class="empty">No records yet. Mark some attendance!</div>';
+    return;
+  }
+
+  el.innerHTML = data.map(r => `
+    <div class="record-row">
+      <div class="avatar">${r.name.charAt(0).toUpperCase()}</div>
+      <div class="record-info">
+        <div class="record-name">${r.name} <span style="color:#64748b;font-weight:400;font-size:.75rem">${r.roll}</span></div>
+        <div class="record-meta">${r.subject} • ${r.date}</div>
+      </div>
+      <span class="status-pill pill-${r.status.toLowerCase()}">${r.status}</span>
+      <button class="btn-del" onclick="deleteRecord(${r.id})" title="Delete">✕</button>
+    </div>
+  `).join('');
+}
+
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// Demo data fallback
+let demoRecords = [
+  { id:1, name:'Ganesh', roll:'21CS045', subject:'DBMS', date:'2026-02-18', status:'Present' },
+  { id:2, name:'Priya',  roll:'21CS032', subject:'DBMS', date:'2026-02-18', status:'Absent'  },
+  { id:3, name:'Ravi',   roll:'21CS018', subject:'DBMS', date:'2026-02-18', status:'Late'    },
+];
+
+loadRecords();
+</script>
+</body>
+</html>
